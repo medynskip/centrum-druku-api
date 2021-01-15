@@ -1,62 +1,70 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const Product = require('../models/Product');
+const Product = require("../models/Product");
 
-router.delete('/delete/:id', function (req, res) {
-    var id = req.params.id;
-    Product.deleteOne({
-        _id: id
-    }, function (err) {
-        if (err) return console.log(err);
-        res.status(200).end();
-    });
+router.delete("/delete/:id", function (req, res) {
+  var id = req.params.id;
+  Product.deleteOne(
+    {
+      _id: id,
+    },
+    function (err) {
+      if (err) return console.log(err);
+      res.status(200).end();
+    }
+  );
 });
 
-router.get('/get', (req, res) => {
-    Product.find({}, (err, data) => {
-        if (err) return console.log(err);
-        res.json(data);
+router.get("/get", (req, res) => {
+  Product.find({}, (err, data) => {
+    if (err) return console.log(err);
+    res.json(data);
+  });
+});
+
+router.get("/get/:id", (req, res) => {
+  var id = req.params.id;
+  Product.findById(id, (err, data) => {
+    if (err) return console.log(err);
+    res.json(data);
+  });
+});
+
+router.put("/update/:id", (req, res) => {
+  var id = req.params.id;
+  console.log(req.body);
+  Product.findByIdAndUpdate(
+    id,
+    req.body,
+    {
+      new: true,
+      useFindAndModify: false,
+    },
+    (err, data) => {
+      if (err) return console.log(err);
+      res.json(data);
+    }
+  );
+});
+
+router.post("/add", (req, res) => {
+  const newProduct = new Product({
+    // name: req.body.name,
+    // parameters: req.body.parameters,
+    // prices: req.body.prices
+    ...req.body,
+  });
+
+  newProduct
+    .save()
+    .then((data) => {
+      res.json(data);
+      console.log(`Wpis dodany do bazy`);
     })
-})
-
-router.get('/get/:id', (req, res) => {
-    var id = req.params.id;
-    Product.findById(id, (err, data) => {
-        if (err) return console.log(err);
-        res.json(data);
-    })
-})
-
-
-router.put('/update/:id', (req, res) => {
-    var id = req.params.id;
-    console.log(req.body);
-    Product.findByIdAndUpdate(id, req.body, {
-        new: true,
-        useFindAndModify: false
-    }, (err, data) => {
-        if (err) return console.log(err);
-        res.json(data);
-    })
-})
-
-
-router.post('/add', (req, res) => {
-    const newProduct = new Product({
-        name: req.body.name,
-        parameters: req.body.parameters,
-        prices: req.body.prices
-    })
-
-    newProduct.save()
-        .then(data => {
-            res.json(data);
-            console.log(`Wpis dodany do bazy`);
-        })
-        .catch(err => {
-            res.status(404);
-        })
-})
+    .catch((err) => {
+      res.status(404);
+    });
+});
 
 module.exports = router;
