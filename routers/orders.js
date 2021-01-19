@@ -41,11 +41,10 @@ router.get("/get/:id", (req, res) => {
 });
 
 router.post("/add", upload.none(), (req, res) => {
-  const toJson = JSON.parse(req.body.order);
   const newOrder = new Order({
-    ...toJson,
-    status: "Nowe",
-    placed: Date.now(),
+    ...req.body.order,
+    // status: "Nowe",
+    // placed: Date.now(),
   });
   newOrder
     .save()
@@ -57,6 +56,24 @@ router.post("/add", upload.none(), (req, res) => {
       res.status(404);
     });
 });
+
+//router.post("/add", upload.none(), (req, res) => {
+//   const toJson = JSON.parse(req.body.order);
+//   const newOrder = new Order({
+//     ...toJson,
+//     status: "Nowe",
+//     placed: Date.now(),
+//   });
+//   newOrder
+//     .save()
+//     .then((data) => {
+//       console.log(`Wpis dodany do bazy`, JSON.parse(data));
+//       res.json(data);
+//     })
+//     .catch((err) => {
+//       res.status(404);
+//     });
+// });
 
 ////////////////
 // CO TO JEST //
