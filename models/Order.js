@@ -39,7 +39,7 @@ const ParamSchema = mongoose.Schema({
 });
 
 const OrderSchema = mongoose.Schema({
-  product: {
+  name: {
     type: String,
     required: false,
   },
@@ -47,7 +47,7 @@ const OrderSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-  volume: {
+  amount: {
     type: Number,
     required: false,
   },
@@ -68,7 +68,7 @@ const OrderSchema = mongoose.Schema({
     type: Date,
     required: false,
   },
-  deadline: {
+  duration: {
     type: Number,
     required: false,
   },
