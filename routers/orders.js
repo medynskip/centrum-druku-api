@@ -48,13 +48,8 @@ router.post("/add", upload.none(), (req, res) => {
   });
   newOrder
     .save()
-    .then((data) => {
-      console.log(`Wpis dodany do bazy`, JSON.parse(data));
-      res.json(data);
-    })
-    .catch((err) => {
-      res.status(404);
-    });
+    .then((data) => res.json(data))
+    .catch((err) => res.status(404));
 });
 
 //router.post("/add", upload.none(), (req, res) => {
