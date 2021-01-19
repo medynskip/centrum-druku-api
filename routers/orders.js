@@ -42,7 +42,7 @@ router.get("/get/:id", (req, res) => {
 
 router.post("/add", upload.none(), (req, res) => {
   const newOrder = new Order({
-    ...req.body.order,
+    ...req.body,
     // status: "Nowe",
     // placed: Date.now(),
   });
