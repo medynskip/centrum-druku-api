@@ -22,6 +22,17 @@ router.get("/get", (req, res) => {
     res.json(data);
   });
 });
+router.get("/get/active", (req, res) => {
+  Product.find(
+    {
+      active: true,
+    },
+    (err, data) => {
+      if (err) return console.log(err);
+      res.json(data);
+    }
+  );
+});
 
 router.get("/get/:id", (req, res) => {
   var id = req.params.id;
