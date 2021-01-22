@@ -8,7 +8,7 @@ const Order = require("../models/Order");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const dir = `./uploads/${req.body.order_id}`;
+    const dir = `./public/orders/${req.body.order_id}`;
     fs.exists(dir, (exists) => {
       if (!exists) {
         return fs.mkdir(dir, (err) => cb(err, dir));
@@ -90,7 +90,7 @@ function foo(directory, folder) {
 
 router.post("/add/files", upload.array("file"), (req, res) => {
   const toJson = JSON.parse(req.body.order);
-  const directoryPath = `./uploads/${req.body.order_id}`;
+  const directoryPath = `./public/orders/${req.body.order_id}`;
 
   foo(directoryPath, req.body.order_id)
     // fs.readdir(directoryPath, function (err, files) {

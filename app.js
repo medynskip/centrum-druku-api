@@ -12,8 +12,9 @@ const productRouter = require("./routers/products");
 const postsRouter = require("./routers/posts");
 const ordersRouter = require("./routers/orders");
 const usersRouter = require("./routers/users");
+const filesRouter = require("./routers/files");
 
-app.use("/public", express.static(path.join(__dirname + "/uploads")));
+app.use("/public", express.static(path.join(__dirname + "/public")));
 
 app.use(express.json());
 
@@ -24,6 +25,7 @@ app.use("/product", productRouter);
 app.use("/blog", postsRouter);
 app.use("/order", ordersRouter);
 app.use("/user", usersRouter);
+app.use("/file", filesRouter);
 
 //connect to db
 mongoose.connect(
