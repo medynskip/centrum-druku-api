@@ -72,10 +72,6 @@ router.post("/mkdir/", function (req, res) {
 });
 
 router.post("/upload/", upload.array("file"), function (req, res) {
-  // router.post("/upload/", upload.none(), function (req, res) {
-  // uploadFiles(req, res);
-  // const jsonF = JSON.parse(req.body.params);
-  // console.log("tutaj", jsonF);
   res.send({ data: "success" });
 });
 

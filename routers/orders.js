@@ -8,7 +8,7 @@ const Order = require("../models/Order");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const dir = `./public/orders/${req.body.order_id}`;
+    const dir = `./public/orders/${req.body.order}`;
     fs.exists(dir, (exists) => {
       if (!exists) {
         return fs.mkdir(dir, (err) => cb(err, dir));
@@ -25,6 +25,24 @@ const upload = multer({
   storage: storage,
 });
 
+function getDirectoryFiles(directory, folder) {
+  return new Promise(function (resolve, reject) {
+    const fileList = [];
+    fs.readdir(directory, function (err, files) {
+      if (err) {
+        reject(console.log("Unable to scan directory: " + err));
+      }
+      files.forEach(function (file) {
+        fileList.push(`/${folder}/${file}`);
+      });
+      resolve(fileList);
+    });
+  });
+}
+
+// ROUTES BELOW
+
+// Get all orders
 router.get("/get", (req, res) => {
   Order.find({}, (err, data) => {
     if (err) return console.log(err);
@@ -32,6 +50,7 @@ router.get("/get", (req, res) => {
   });
 });
 
+// Get one order by id
 router.get("/get/:id", (req, res) => {
   var id = req.params.id;
   Order.findById(id, (err, data) => {
@@ -40,11 +59,10 @@ router.get("/get/:id", (req, res) => {
   });
 });
 
+// Get one order by id if correct email provided
 router.get("/get/:id/:email", (req, res) => {
-  console.log("email:", req.params.email);
   var id = req.params.id;
   Order.findById(id, (err, data) => {
-    // if (err) return console.log(err);
     if (err) return res.json({ msg: "BRAK ZAMOWIENIA", err: err });
     if (data.client.email == req.params.email) {
       return res.json(data);
@@ -56,11 +74,10 @@ router.get("/get/:id/:email", (req, res) => {
   });
 });
 
+// Create new order
 router.post("/add", upload.none(), (req, res) => {
   const newOrder = new Order({
     ...req.body,
-    // status: "Nowe",
-    // placed: Date.now(),
   });
   newOrder
     .save()
@@ -68,89 +85,28 @@ router.post("/add", upload.none(), (req, res) => {
     .catch((err) => res.status(404));
 });
 
-//router.post("/add", upload.none(), (req, res) => {
-//   const toJson = JSON.parse(req.body.order);
-//   const newOrder = new Order({
-//     ...toJson,
-//     status: "Nowe",
-//     placed: Date.now(),
-//   });
-//   newOrder
-//     .save()
-//     .then((data) => {
-//       console.log(`Wpis dodany do bazy`, JSON.parse(data));
-//       res.json(data);
-//     })
-//     .catch((err) => {
-//       res.status(404);
-//     });
-// });
+// Upload files and update order with file list
+router.post("/update/files", upload.array("file"), (req, res) => {
+  // const id = JSON.parse(req.body.order);
+  const id = req.body.order;
+  const directoryPath = `./public/orders/${id}`;
 
-////////////////
-// CO TO JEST //
-////////////////
-// function foo(directory, folder) {
-//   return new Promise(function (resolve, reject) {
-//     const fileList = [];
-//     fs.readdir(directory, function (err, files) {
-//       if (err) {
-//         reject(console.log("Unable to scan directory: " + err));
-//       }
-//       files.forEach(function (file) {
-//         fileList.push(`/${folder}/${file}`);
-//       });
-//       resolve(fileList);
-//     });
-//   });
-// }
-
-// router.post("/add/files", upload.array("file"), (req, res) => {
-//   const toJson = JSON.parse(req.body.order);
-//   const directoryPath = `./public/orders/${req.body.order_id}`;
-
-//   foo(directoryPath, req.body.order_id)
-// fs.readdir(directoryPath, function (err, files) {
-//     if (err) {
-//         return console.log('Unable to scan directory: ' + err);
-//     }
-//     files.forEach(function (file) {
-//         fileList.push(`/${req.body.order_id}/${file}`)
-//     });
-// });
-// .then((files) => {
-//   console.log(files);
-
-//   const newOrder = new Order({
-//     ...toJson,
-//     placed: Date.now(),
-//     status: "Nowe",
-//     files: [...files],
-//   });
-//   newOrder
-//     .save()
-//     .then((data) => {
-//       res.json(data);
-//       console.log(`Wpis dodany do bazy`);
-//     })
-//     .catch((err) => {
-//       res.status(404);
-//     });
-// });
-// const newOrder = new Order({
-//     ...toJson,
-//     placed: Date.now(),
-//     status: "Nowe",
-//     files: [...fileList]
-// })
-// newOrder.save()
-//     .then(data => {
-//         res.json(data);
-//         console.log(`Wpis dodany do bazy`);
-//     })
-//     .catch(err => {
-//         res.status(404);
-//     })
-// });
+  getDirectoryFiles(directoryPath, req.body.order).then((files) => {
+    var id = req.body.order;
+    Order.findByIdAndUpdate(
+      id,
+      { files: [...files] },
+      {
+        new: true,
+        useFindAndModify: false,
+      },
+      (err, data) => {
+        if (err) return console.log(err);
+        res.json(data);
+      }
+    );
+  });
+});
 
 router.put("/update/:id", (req, res) => {
   var id = req.params.id;
