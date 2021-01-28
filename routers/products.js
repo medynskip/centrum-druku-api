@@ -22,6 +22,7 @@ router.get("/get", (req, res) => {
     res.json(data);
   });
 });
+
 router.get("/get/active", (req, res) => {
   Product.find(
     {
