@@ -2,12 +2,17 @@ const express = require("express");
 const router = express.Router();
 const fetch = require("node-fetch");
 
+router.get("/test"),
+  (req, res) => {
+    res.send("success");
+  };
+
 router.post("/create", (req, res) => {
   fetch("https://secure.snd.payu.com/api/v2_1/orders", {
     method: "post",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer d65950f99775cbfe192d10ef6a64ab24",
+      Authorization: "Bearer 0bbb17f6f9f46f1c768648a21a47550d",
     },
     body: {
       ...req.body,
