@@ -36,7 +36,7 @@ const payment = async (token, req) => {
     },
     body: JSON.stringify(req.body),
   });
-  console.log(query);
+  //   console.log(query);
   return query.url;
 };
 
