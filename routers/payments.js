@@ -3,8 +3,6 @@ const router = express.Router();
 const fetch = require("node-fetch");
 
 router.post("/test", async (req, res) => {
-  const request = await req.json();
-  console.log(request);
   console.log("info from PAYU");
   res.sendStatus(200);
 });
