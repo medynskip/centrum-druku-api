@@ -16,14 +16,11 @@ const fecz = async () => {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body:
-        "grant_type=client_credentials&client_id=" +
-        process.env.CLIENT_ID +
-        "&client_secret=" +
-        process.env.CLIENT_SECRET,
+        "grant_type=client_credentials&client_id=402972&client_secret=40d4c2430c73e528c395d9d73f594766",
     }
   );
   const token = await query.json();
-  console.log(token);
+  console.log("token", token);
   return token;
 };
 
