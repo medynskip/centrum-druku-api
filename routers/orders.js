@@ -87,7 +87,6 @@ router.post("/add", upload.none(), (req, res) => {
 
 // Upload files and update order with file list
 router.post("/update/files", upload.array("file"), (req, res) => {
-  // const id = JSON.parse(req.body.order);
   const id = req.body.order;
   const directoryPath = `./public/orders/${id}`;
 
