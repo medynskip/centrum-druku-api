@@ -2,9 +2,11 @@ const express = require("express");
 const router = express.Router();
 const fetch = require("node-fetch");
 
-router.get("/test", (req, res) => {
-  console.log(req);
+router.post("/test", async (req, res) => {
+  const request = await req.json();
+  console.log(request);
   console.log("info from PAYU");
+  res.sendStatus(200);
 });
 
 const fecz = async () => {
