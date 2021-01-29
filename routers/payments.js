@@ -5,7 +5,6 @@ const fetch = require("node-fetch");
 router.get("/test", (req, res) => {
   console.log(req);
   console.log("info from PAYU");
-  //   res.send("success");
 });
 
 const fecz = async () => {
@@ -24,11 +23,11 @@ const fecz = async () => {
     }
   );
   const token = await query.json();
+  console.log(token);
   return token;
 };
 
 const payment = async (token, req) => {
-  console.log(req.body);
   const query = await fetch("https://secure.snd.payu.com/api/v2_1/orders", {
     method: "post",
     headers: {
@@ -37,13 +36,12 @@ const payment = async (token, req) => {
     },
     body: JSON.stringify(req.body),
   });
-  console.log(query.headers);
+  console.log(query);
   return query.url;
 };
 
 router.post("/create", async (req, res) => {
   const token = await fecz();
-  //   console.log(token);
   const stream = await payment(token, req);
   res.json({ url: stream, success: "OK" });
 });
