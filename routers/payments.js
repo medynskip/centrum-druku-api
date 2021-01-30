@@ -1,9 +1,28 @@
 const express = require("express");
 const router = express.Router();
 const fetch = require("node-fetch");
+const Order = require("../models/Order");
 
 router.post("/test", async (req, res) => {
   console.log("info from PAYU");
+  const entry = {
+    date: Date.now(),
+    comment: `Aktualizacja płatności PayU: ${req.body.order.status}`,
+  };
+  const id = req.body.order.extOrderId;
+  Order.findByIdAndUpdate(
+    id,
+    { $push: { history: entry } },
+    {
+      new: true,
+      useFindAndModify: false,
+    },
+    (err, data) => {
+      if (err) return console.log(err);
+      res.json(data);
+    }
+  );
+
   res.sendStatus(200);
 });
 

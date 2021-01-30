@@ -49,6 +49,16 @@ const ParamSchema = mongoose.Schema({
     required: false,
   },
 });
+const HistorySchema = mongoose.Schema({
+  date: {
+    type: Date,
+    required: true,
+  },
+  comment: {
+    type: String,
+    required: true,
+  },
+});
 
 const OrderSchema = mongoose.Schema({
   product: {
@@ -84,14 +94,15 @@ const OrderSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-  comment: {
-    type: String,
-    required: false,
-  },
+  // comment: {
+  //   type: String,
+  //   required: false,
+  // },
   payment: {
     type: String,
     required: false,
   },
+  history: [HistorySchema],
   client: ClientSchema,
 });
 

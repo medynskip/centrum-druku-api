@@ -107,6 +107,7 @@ router.post("/update/files", upload.array("file"), (req, res) => {
   });
 });
 
+// Update order by ID
 router.put("/update/:id", (req, res) => {
   var id = req.params.id;
   Order.findByIdAndUpdate(
