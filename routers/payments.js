@@ -12,17 +12,15 @@ router.post("/test", async (req, res) => {
   const id = req.body.order.extOrderId;
   Order.findByIdAndUpdate(
     id,
-    { $push: { history: entry } },
+    { $push: { history: entry }, status: req.body.order.status },
     {
       new: true,
       useFindAndModify: false,
     },
     (err, data) => {
       if (err) return console.log(err);
-      // res.json(data);
     }
   );
-
   res.sendStatus(200);
 });
 
