@@ -12,7 +12,7 @@ router.post("/test", async (req, res) => {
   const id = req.body.order.extOrderId;
   Order.findByIdAndUpdate(
     id,
-    { $push: { history: entry }, status: req.body.order.status },
+    { $push: { history: entry }, status: req.body.order.payment },
     {
       new: true,
       useFindAndModify: false,

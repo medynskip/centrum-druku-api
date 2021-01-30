@@ -47,6 +47,8 @@ router.get("/get", (req, res) => {
   Order.find({}, (err, data) => {
     if (err) return console.log(err);
     res.json(data);
+  }).sort({
+    added: -1,
   });
 });
 
