@@ -19,7 +19,7 @@ router.post("/test", async (req, res) => {
     },
     (err, data) => {
       if (err) return console.log(err);
-      res.json(data);
+      // res.json(data);
     }
   );
 
