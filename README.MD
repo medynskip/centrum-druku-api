@@ -5,7 +5,6 @@ Repository of the website available here: https://github.com/medynskip/centrum-d
 
 # DEMO
 Live preview of the site: http://druk.piotrmedynski.pl/
-Admin panel available at: https://druk.piotrmedynski.pl/admin-panel/ 
 
 ## TECHNOLOGIES 
 * Node.js
