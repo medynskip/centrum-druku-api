@@ -1,11 +1,11 @@
 # CENTRUM_DRUKU_API
 API  backend for MongoDB database communication dedicated for Centrum Druku business website. 
 
-Repository of the website available here: https://github.com/medynskip/CENTRUM_DRUKU_CLIENT
+Repository of the website available here: https://github.com/medynskip/centrum-druku
 
 # DEMO
-Live preview of the site: https://centrum-druku.netlify.app/
-Admin panel available at: https://centrum-druku.netlify.app/admin/
+Live preview of the site: http://druk.piotrmedynski.pl/
+Admin panel available at: https://druk.piotrmedynski.pl/admin-panel/ 
 
 ## TECHNOLOGIES 
 * Node.js
