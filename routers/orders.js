@@ -2,9 +2,31 @@ const express = require("express");
 const fs = require("fs");
 const router = express.Router();
 const multer = require("multer");
-var path = require("path");
+const path = require("path");
+
+const nodemailer = require("nodemailer");
 
 const Order = require("../models/Order");
+
+// default nodemailer transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "centrumdruku.online@gmail.com",
+    pass: process.env.APP_PASSWORD,
+  },
+});
+
+// default nodemailer mailoptions
+const generateMailOptions = (email, order_id) => {
+  return {
+    from: "Powiadomienie Centrum Druku <notyfikacje@centrumdruku.online>",
+    to: `${email}`,
+    subject: `Przyjęliśmy do realizacji zamówienie nr: ${order_id}`,
+    text: `Twoje zamówienie nr ${order_id} zostało przyjęte do realizacji. `,
+    html: `<b>Twoje zamówienie nr ${order_id} zostało przyjęte do realizacji.</b><br />Przejdz na strone http://centrumdruku.online/zamowienie/wyszukaj aby sprawdzic jego status.`,
+  };
+};
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -48,7 +70,7 @@ router.get("/get", (req, res) => {
     if (err) return console.log(err);
     res.json(data);
   }).sort({
-    added: -1,
+    placed: -1,
   });
 });
 
@@ -83,7 +105,17 @@ router.post("/add", upload.none(), (req, res) => {
   });
   newOrder
     .save()
-    .then((data) => res.json(data))
+    .then((data) => {
+      const mailOptions = generateMailOptions(data.client.email, data._id);
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent: " + info.response);
+        }
+      });
+      res.json(data);
+    })
     .catch((err) => res.status(404));
 });
 
