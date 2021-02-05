@@ -86,19 +86,27 @@ const OrderSchema = mongoose.Schema({
     type: Date,
     required: false,
   },
+  paymentType: {
+    type: String,
+    required: false,
+  },
+  payment: {
+    type: String,
+    required: false,
+  },
+  invoiceTemp: {
+    type: Date,
+    required: false,
+  },
+  invoice: {
+    type: Date,
+    required: false,
+  },
   duration: {
     type: Number,
     required: false,
   },
   status: {
-    type: String,
-    required: false,
-  },
-  // comment: {
-  //   type: String,
-  //   required: false,
-  // },
-  payment: {
     type: String,
     required: false,
   },

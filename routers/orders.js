@@ -3,7 +3,7 @@ const fs = require("fs");
 const router = express.Router();
 const multer = require("multer");
 const path = require("path");
-
+const pdf = require("./../utils/pdf");
 const nodemailer = require("nodemailer");
 
 const Order = require("../models/Order");
@@ -141,9 +141,41 @@ router.post("/update/files", upload.array("file"), (req, res) => {
   });
 });
 
+// Generate an invoice and update order entry
+router.post("/update/temp-invoice/:id", (req, res) => {
+  const id = req.params.id;
+
+  Order.findById(id, (err, data) => {
+    if (err) return console.log(err);
+    pdf.create(data);
+  }).then(
+    Order.findByIdAndUpdate(
+      id,
+      {
+        invoice: Date.now(),
+      },
+      {
+        new: true,
+        useFindAndModify: false,
+      },
+      (err, data) => {
+        if (err) return console.log(err);
+        res.json(data);
+      }
+    )
+  );
+});
+
+// Provide invoice data in response
+router.get("/invoice/download/:id", (req, res) => {
+  const id = req.params.id;
+  const filePath = `./public/invoices/${id}/pro-forma.pdf`;
+  res.download(filePath);
+});
+
 // Update order by ID
 router.put("/update/:id", (req, res) => {
-  var id = req.params.id;
+  const id = req.params.id;
   Order.findByIdAndUpdate(
     id,
     req.body,

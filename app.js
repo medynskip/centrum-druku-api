@@ -15,6 +15,7 @@ const usersRouter = require("./routers/users");
 const filesRouter = require("./routers/files");
 const pagesRouter = require("./routers/pages");
 const paymentRouter = require("./routers/payments");
+const configurationRouter = require("./routers/configuration");
 
 app.use("/public", express.static(path.join(__dirname + "/public")));
 
@@ -30,6 +31,7 @@ app.use("/user", usersRouter);
 app.use("/file", filesRouter);
 app.use("/page", pagesRouter);
 app.use("/payment", paymentRouter);
+app.use("/configuration", configurationRouter);
 
 //connect to db
 mongoose.connect(
