@@ -1,6 +1,8 @@
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
 
+const Configuration = require("../models/Configuration");
+
 module.exports = {
   formatDate: function (date) {
     const day = date.getDate();
@@ -13,21 +15,76 @@ module.exports = {
   generateHr: function (doc, from, to, y) {
     doc
       .strokeColor("#aaaaaa")
-      .lineWidth(2)
+      .lineWidth(1)
       .moveTo(from, y)
       .lineTo(to, y)
       .stroke();
   },
 
-  generateHeader: function (doc, data) {
+  // getVatNumber: function () {
+  //   let number = `Faktura VAT nr `;
+  //   Configuration.find({}, (err, data) => {
+  //     if (err) return console.log(err);
+  //     let temp = data[0].lastInvoice;
+  //     console.log(temp);
+  //     if (temp.month == new Date().getMonth + 1) {
+  //       return number + temp.month;
+  //     }
+  //   });
+  // },
+
+  getNumber: function (type) {
+    return new Promise(function (resolve, reject) {
+      let number = type == "VAT" ? `Faktura VAT nr ` : `Faktura PRO-FORMA nr `;
+      let typeConvert = type == "VAT" ? `lastInvoice` : `lastTempInvoice`;
+      let temp;
+      Configuration.find({}, (err, data) => {
+        if (err) return console.log(err);
+        temp = type == "VAT" ? data[0].lastInvoice : data[0].lastTempInvoice;
+        let month = new Date().getMonth() + 1;
+        if (temp.month == month) {
+          temp.id += 1;
+          number += `${temp.id}/${temp.month}/${temp.year}/CD`;
+        } else {
+          temp.id = 1;
+          temp.month += 1;
+          number += `${temp.id}/${temp.month + 1}/${temp.year}/CD`;
+        }
+      }).then((obj) => {
+        // console.log("objekt", obj);
+        Configuration.findByIdAndUpdate(
+          obj[0]._id,
+          {
+            [typeConvert]: {
+              id: temp.id,
+              month: temp.month,
+              year: temp.year,
+            },
+          },
+          {
+            new: true,
+            useFindAndModify: false,
+          },
+          (err, data) => {
+            if (err) return console.log("tu?", err);
+            console.log("czy", data);
+          }
+        );
+        resolve(number);
+      });
+    });
+  },
+
+  generateHeader: function (doc, data, id) {
+    // const id = type == "VAT" ? this.getVatNumber() : this.getTempNumber();
     doc
-      .image("./public/logo.png", 50, 45, { width: 80 })
+      .image("./public/logo.png", 50, 45, { width: 120 })
       .fillColor("#444444")
       .fontSize(10)
-      .text(`Miejsce wystawienia:`, 200, 50, { align: "right" });
+      .text(`Data wystawienia:`, 200, 50, { align: "right" });
     this.generateHr(doc, 460, 560, 65);
     doc
-      .text(`Skarżysko-Kamienna`, 200, 70, { align: "right" })
+      .text(`${this.formatDate(new Date())}`, 200, 70, { align: "right" })
       .text(`Data sprzedaży:`, 200, 90, { align: "right" });
     this.generateHr(doc, 460, 560, 105);
     doc
@@ -36,18 +93,27 @@ module.exports = {
     doc
       .fontSize(16)
       .font("./fonts/roboto/Roboto-Bold.ttf")
-      .text(`FAKTURA PRO-FORMA NR 01/02/2021`, 50, 220, {
+      .text(`${id}`, 50, 160, {
         width: 530,
         align: "center",
       });
   },
 
   generateCustomerInformation: function (doc, data) {
-    doc
-      .text(`Numer zamówienia: ${data._id}`, 50, 250)
-      .text(`Data wystawienia: ${this.formatDate(new Date())}`, 50, 265)
-      .text(`Do zapłaty: ${data.value * 1.23}`, 50, 280)
-      .moveDown();
+    // SPRZEDAWCA
+    doc.text(`Sprzedawca:`, 50, 195, { width: 200, align: "center" });
+    this.generateHr(doc, 50, 250, 210);
+    doc.text(`Centrum druku`, 50, 215);
+    doc.text(`ul. Pułaskiego 1/9`, 50, 230);
+    doc.text(`26-110 Skarżysko-Kamienna`, 50, 245);
+    doc.text(`NIP: 663-135-27-63`, 50, 260);
+    // NABYWCA
+    doc.text(`Nabywca:`, 350, 195, { width: 200, align: "center" });
+    this.generateHr(doc, 350, 550, 210);
+    doc.text(`${data.client.name}`, 350, 215);
+    doc.text(`${data.client.street}`, 350, 230);
+    doc.text(`${data.client.postal} ${data.client.city}`, 350, 245);
+    doc.text(`NIP: ${data.client.nip ? data.client.nip : "n/d"}`, 350, 260);
   },
 
   generateTableRow: function (doc, y, c1, c2, c3, c4, c5, c6, c7, c8) {
@@ -55,12 +121,12 @@ module.exports = {
       .fontSize(10)
       .text(c1, 50, y) // LP
       .text(c2, 80, y) // Nazwa towaru
-      .text(c3, 260, y, { width: 40, align: "right" }) // JM
-      .text(c4, 300, y, { width: 40, align: "right" }) // Ilość
-      .text(c5, 340, y, { width: 40, align: "right" }) //Cena netto
-      .text(c6, 380, y, { width: 40, align: "right" }) //stawka vat
-      .text(c7, 420, y, { width: 40, align: "right" }) //vat
-      .text(c8, 0, y, { align: "right" }); //razem
+      .text(c3, 250, y, { width: 30, align: "center" }) // JM
+      .text(c4, 280, y, { width: 30, align: "center" }) // Ilość
+      .text(c5, 310, y, { width: 60, align: "center" }) // Cena netto
+      .text(c6, 370, y, { width: 50, align: "center" }) // stawka vat
+      .text(c7, 420, y, { width: 60, align: "center" }) // kwota vat
+      .text(c8, 480, y, { width: 60, align: "center" }); // razem
   },
 
   generateInvoiceTable: function (doc, data) {
@@ -68,9 +134,9 @@ module.exports = {
     this.generateTableRow(
       doc,
       330,
-      "LP.",
+      "Lp.",
       "Nazwa produktu",
-      "JM",
+      "Jm.",
       "Ilość",
       "Kwota netto",
       "Stawka VAT",
@@ -83,31 +149,66 @@ module.exports = {
       doc,
       370,
       1,
-      data.product,
+      `${data.product}`,
       "pakiet",
       1,
-      data.value,
+      `${data.value}.00`,
       "23%",
       data.value * 0.23,
       data.value * 1.23
     );
+    this.generateHr(doc, 50, 560, 390);
+    doc.font("./fonts/roboto/Roboto-Bold.ttf").text("Razem:", 290, 395);
+    doc
+      .font("./fonts/roboto/Roboto-Regular.ttf")
+      .text(`${data.value}.00`, 310, 395, { width: 60, align: "center" }) //Cena netto
+      .text(data.value * 0.23, 420, 395, { width: 60, align: "center" }) //vat
+      .text(data.value * 1.23, 480, 395, { width: 60, align: "center" }); //razem
   },
 
-  createInvoice: function (data, path) {
+  generateSummary: function (doc, data) {
+    this.generateHr(doc, 50, 200, 430);
+    doc
+      .fontSize(12)
+      .font("./fonts/roboto/Roboto-Bold.ttf")
+      .text("Do zapłaty:", 50, 435)
+      .text(`${data.value * 1.23}`, 150, 435);
+    this.generateHr(doc, 50, 200, 455);
+
+    doc
+      .fontSize(10)
+      .font("./fonts/roboto/Roboto-Regular.ttf")
+      .text(`Sposób płatności:`, 50, 460)
+      .text(`Przelew`, 150, 460)
+      .text(`Termin płatności:`, 50, 475)
+      .text(`14 dni`, 150, 475)
+      .text(`Numer konta:`, 50, 490)
+      .text(`30 1050 1461 1000 0091 3992 9534`, 150, 490);
+  },
+
+  createInvoice: function (data, path, type, id) {
     let doc = new PDFDocument({ margin: 50 });
     doc.font("./fonts/roboto/Roboto-Regular.ttf");
-    this.generateHeader(doc, data);
+    this.generateHeader(doc, data, id);
     doc.font("./fonts/roboto/Roboto-Regular.ttf").fontSize(10);
     this.generateCustomerInformation(doc, data);
     this.generateInvoiceTable(doc, data);
+    this.generateSummary(doc, data);
     doc.end();
-    doc.pipe(fs.createWriteStream(`${path}/pro-forma.pdf`));
+    if (type == "VAT") {
+      doc.pipe(fs.createWriteStream(`${path}/faktura-VAT.pdf`));
+    } else {
+      doc.pipe(fs.createWriteStream(`${path}/pro-forma.pdf`));
+    }
   },
 
-  create: async function (data) {
+  create: async function (data, type) {
     const dir = `./public/invoices/${data._id}/`;
-    fs.promises
-      .mkdir(dir, { recursive: true })
-      .then(this.createInvoice(data, dir));
+    await this.getNumber(type).then((number) => {
+      // console.log(number);
+      fs.promises.mkdir(dir, { recursive: true }).then(() => {
+        this.createInvoice(data, dir, type, number);
+      });
+    });
   },
 };

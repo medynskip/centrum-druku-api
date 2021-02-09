@@ -142,12 +142,12 @@ router.post("/update/files", upload.array("file"), (req, res) => {
 });
 
 // Generate an invoice and update order entry
-router.post("/update/temp-invoice/:id", (req, res) => {
+router.post("/update/invoice/:id", (req, res) => {
   const id = req.params.id;
 
   Order.findById(id, (err, data) => {
     if (err) return console.log(err);
-    pdf.create(data);
+    pdf.create(data, "VAT");
   }).then(
     Order.findByIdAndUpdate(
       id,
@@ -166,8 +166,40 @@ router.post("/update/temp-invoice/:id", (req, res) => {
   );
 });
 
+// Generate a temp invoice and update order entry
+router.post("/update/temp-invoice/:id", (req, res) => {
+  const id = req.params.id;
+
+  Order.findById(id, (err, data) => {
+    if (err) return console.log(err);
+    pdf.create(data, "temp");
+  }).then(
+    Order.findByIdAndUpdate(
+      id,
+      {
+        invoiceTemp: Date.now(),
+      },
+      {
+        new: true,
+        useFindAndModify: false,
+      },
+      (err, data) => {
+        if (err) return console.log(err);
+        res.json(data);
+      }
+    )
+  );
+});
+
 // Provide invoice data in response
 router.get("/invoice/download/:id", (req, res) => {
+  const id = req.params.id;
+  const filePath = `./public/invoices/${id}/faktura-VAT.pdf`;
+  res.download(filePath);
+});
+
+// Provide temp invoice data in response
+router.get("/temp-invoice/download/:id", (req, res) => {
   const id = req.params.id;
   const filePath = `./public/invoices/${id}/pro-forma.pdf`;
   res.download(filePath);
