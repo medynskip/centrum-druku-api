@@ -9,7 +9,7 @@ module.exports = {
     const month = date.getMonth() + 1;
     const year = date.getFullYear();
 
-    return year + "/" + month + "/" + day;
+    return day + "/" + ("0" + (month + 1)).slice(-2) + "/" + year;
   },
 
   generateHr: function (doc, from, to, y) {
@@ -20,18 +20,6 @@ module.exports = {
       .lineTo(to, y)
       .stroke();
   },
-
-  // getVatNumber: function () {
-  //   let number = `Faktura VAT nr `;
-  //   Configuration.find({}, (err, data) => {
-  //     if (err) return console.log(err);
-  //     let temp = data[0].lastInvoice;
-  //     console.log(temp);
-  //     if (temp.month == new Date().getMonth + 1) {
-  //       return number + temp.month;
-  //     }
-  //   });
-  // },
 
   getNumber: function (type) {
     return new Promise(function (resolve, reject) {
@@ -51,7 +39,6 @@ module.exports = {
           number += `${temp.id}/${temp.month + 1}/${temp.year}/CD`;
         }
       }).then((obj) => {
-        // console.log("objekt", obj);
         Configuration.findByIdAndUpdate(
           obj[0]._id,
           {
@@ -66,8 +53,7 @@ module.exports = {
             useFindAndModify: false,
           },
           (err, data) => {
-            if (err) return console.log("tu?", err);
-            console.log("czy", data);
+            if (err) return console.log(err);
           }
         );
         resolve(number);
@@ -120,13 +106,13 @@ module.exports = {
     doc
       .fontSize(10)
       .text(c1, 50, y) // LP
-      .text(c2, 80, y) // Nazwa towaru
-      .text(c3, 250, y, { width: 30, align: "center" }) // JM
-      .text(c4, 280, y, { width: 30, align: "center" }) // Ilość
-      .text(c5, 310, y, { width: 60, align: "center" }) // Cena netto
-      .text(c6, 370, y, { width: 50, align: "center" }) // stawka vat
-      .text(c7, 420, y, { width: 60, align: "center" }) // kwota vat
-      .text(c8, 480, y, { width: 60, align: "center" }); // razem
+      .text(c2, 70, y, { width: 240, align: "left" }) // Nazwa towaru
+      .text(c3, 310, y, { width: 20, align: "center" }) // JM
+      .text(c4, 330, y, { width: 30, align: "center" }) // Ilość
+      .text(c5, 360, y, { width: 50, align: "center" }) // Cena netto
+      .text(c6, 410, y, { width: 40, align: "center" }) // stawka vat
+      .text(c7, 450, y, { width: 50, align: "center" }) // kwota vat
+      .text(c8, 510, y, { width: 50, align: "center" }); // razem
   },
 
   generateInvoiceTable: function (doc, data) {
@@ -149,21 +135,28 @@ module.exports = {
       doc,
       370,
       1,
-      `${data.product}`,
-      "pakiet",
+      `Zamówienie: ${data._id}`,
+      "kpl.",
       1,
       `${data.value}.00`,
       "23%",
       data.value * 0.23,
       data.value * 1.23
     );
-    this.generateHr(doc, 50, 560, 390);
-    doc.font("./fonts/roboto/Roboto-Bold.ttf").text("Razem:", 290, 395);
+    doc
+      .fontSize(8)
+      .text(`SZCZEGÓŁY: ${data.product}, ${data.volume} sztuk`, 70, 385);
+    this.generateHr(doc, 50, 560, 400);
+    doc
+      .fontSize(10)
+      .font("./fonts/roboto/Roboto-Bold.ttf")
+      .text("Razem:", 320, 405);
     doc
       .font("./fonts/roboto/Roboto-Regular.ttf")
-      .text(`${data.value}.00`, 310, 395, { width: 60, align: "center" }) //Cena netto
-      .text(data.value * 0.23, 420, 395, { width: 60, align: "center" }) //vat
-      .text(data.value * 1.23, 480, 395, { width: 60, align: "center" }); //razem
+      .text(`${data.value}.00`, 360, 405, { width: 50, align: "center" }) //Cena netto
+      .text(`---`, 410, 405, { width: 40, align: "center" }) // stawka vat
+      .text(data.value * 0.23, 450, 405, { width: 50, align: "center" }) //vat
+      .text(data.value * 1.23, 510, 405, { width: 50, align: "center" }); //razem
   },
 
   generateSummary: function (doc, data) {
@@ -186,6 +179,20 @@ module.exports = {
       .text(`30 1050 1461 1000 0091 3992 9534`, 150, 490);
   },
 
+  generateSignatures: function (doc) {
+    doc.fontSize(8);
+    this.generateHr(doc, 50, 250, 560);
+    doc.text(`Podpis osoby upoważnionej do wystawienia`, 50, 565, {
+      width: 200,
+      align: "center",
+    });
+    this.generateHr(doc, 350, 550, 560);
+    doc.text(`Podpis osoby upoważnionej do odbioru`, 350, 565, {
+      width: 200,
+      align: "center",
+    });
+  },
+
   createInvoice: function (data, path, type, id) {
     let doc = new PDFDocument({ margin: 50 });
     doc.font("./fonts/roboto/Roboto-Regular.ttf");
@@ -194,6 +201,7 @@ module.exports = {
     this.generateCustomerInformation(doc, data);
     this.generateInvoiceTable(doc, data);
     this.generateSummary(doc, data);
+    this.generateSignatures(doc);
     doc.end();
     if (type == "VAT") {
       doc.pipe(fs.createWriteStream(`${path}/faktura-VAT.pdf`));

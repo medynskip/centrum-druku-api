@@ -90,15 +90,23 @@ const OrderSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-  payment: {
+  paymentStatus: {
     type: String,
     required: false,
   },
-  invoiceTemp: {
+  paymentStarted: {
+    type: Date,
+    required: false,
+  },
+  paymentCompleted: {
     type: Date,
     required: false,
   },
   invoice: {
+    type: Date,
+    required: false,
+  },
+  invoiceTemp: {
     type: Date,
     required: false,
   },

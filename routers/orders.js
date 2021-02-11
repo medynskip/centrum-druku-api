@@ -123,7 +123,6 @@ router.post("/add", upload.none(), (req, res) => {
 router.post("/update/files", upload.array("file"), (req, res) => {
   const id = req.body.order;
   const directoryPath = `./public/orders/${id}`;
-
   getDirectoryFiles(directoryPath, req.body.order).then((files) => {
     var id = req.body.order;
     Order.findByIdAndUpdate(

@@ -3,7 +3,7 @@ const router = express.Router();
 const fetch = require("node-fetch");
 const Order = require("../models/Order");
 
-router.post("/test", async (req, res) => {
+router.post("/update-status/:id", async (req, res) => {
   console.log("info from PAYU");
   const entry = {
     date: Date.now(),
@@ -12,7 +12,7 @@ router.post("/test", async (req, res) => {
   const id = req.body.order.extOrderId;
   Order.findByIdAndUpdate(
     id,
-    { $push: { history: entry }, payment: req.body.order.status },
+    { $push: { history: entry }, paymentStatus: req.body.order.status },
     {
       new: true,
       useFindAndModify: false,
@@ -24,7 +24,7 @@ router.post("/test", async (req, res) => {
   res.sendStatus(200);
 });
 
-const fecz = async () => {
+const getToken = async () => {
   const query = await fetch(
     "https://secure.snd.payu.com/pl/standard/user/oauth/authorize",
     {
@@ -41,7 +41,7 @@ const fecz = async () => {
   return token;
 };
 
-const payment = async (token, req) => {
+const getPaymentUrl = async (token, req) => {
   const query = await fetch("https://secure.snd.payu.com/api/v2_1/orders", {
     method: "post",
     headers: {
@@ -54,9 +54,29 @@ const payment = async (token, req) => {
   return query.url;
 };
 
-router.post("/create", async (req, res) => {
-  const token = await fecz();
-  const stream = await payment(token, req);
+router.post("/create/:id", async (req, res) => {
+  const id = req.params.id;
+  const token = await getToken();
+  const stream = await getPaymentUrl(token, req);
+  const entry = {
+    date: Date.now(),
+    comment: `Wybrano metodę płatności -PayU- oraz rozpoczęto proces płatności`,
+  };
+  Order.findByIdAndUpdate(
+    id,
+    {
+      $push: { history: entry },
+      paymentType: "PayU",
+      paymemtStarted: Date.now(),
+    },
+    {
+      new: true,
+      useFindAndModify: false,
+    },
+    (err, data) => {
+      if (err) return console.log(err);
+    }
+  );
   res.json({ url: stream, success: "OK" });
 });
 
