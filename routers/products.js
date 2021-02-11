@@ -45,7 +45,6 @@ router.get("/get/:id", (req, res) => {
 
 router.put("/update/:id", (req, res) => {
   var id = req.params.id;
-  console.log(req.body);
   Product.findByIdAndUpdate(
     id,
     req.body,
@@ -62,9 +61,6 @@ router.put("/update/:id", (req, res) => {
 
 router.post("/add", (req, res) => {
   const newProduct = new Product({
-    // name: req.body.name,
-    // parameters: req.body.parameters,
-    // prices: req.body.prices
     ...req.body,
   });
 

@@ -78,7 +78,7 @@ module.exports = {
       .moveDown();
     doc
       .fontSize(16)
-      .font("./fonts/roboto/Roboto-Bold.ttf")
+      .font("./fonts/Roboto/Roboto-Bold.ttf")
       .text(`${id}`, 50, 160, {
         width: 530,
         align: "center",
@@ -116,7 +116,7 @@ module.exports = {
   },
 
   generateInvoiceTable: function (doc, data) {
-    doc.font("./fonts/roboto/Roboto-Bold.ttf");
+    doc.font("./fonts/Roboto/Roboto-Bold.ttf");
     this.generateTableRow(
       doc,
       330,
@@ -130,7 +130,7 @@ module.exports = {
       "Kwota brutto"
     );
     this.generateHr(doc, 50, 560, 360);
-    doc.font("./fonts/roboto/Roboto-Regular.ttf");
+    doc.font("./fonts/Roboto/Roboto-Regular.ttf");
     this.generateTableRow(
       doc,
       370,
@@ -149,10 +149,10 @@ module.exports = {
     this.generateHr(doc, 50, 560, 400);
     doc
       .fontSize(10)
-      .font("./fonts/roboto/Roboto-Bold.ttf")
+      .font("./fonts/Roboto/Roboto-Bold.ttf")
       .text("Razem:", 320, 405);
     doc
-      .font("./fonts/roboto/Roboto-Regular.ttf")
+      .font("./fonts/Roboto/Roboto-Regular.ttf")
       .text(`${data.value}.00`, 360, 405, { width: 50, align: "center" }) //Cena netto
       .text(`---`, 410, 405, { width: 40, align: "center" }) // stawka vat
       .text(data.value * 0.23, 450, 405, { width: 50, align: "center" }) //vat
@@ -163,14 +163,14 @@ module.exports = {
     this.generateHr(doc, 50, 200, 430);
     doc
       .fontSize(12)
-      .font("./fonts/roboto/Roboto-Bold.ttf")
+      .font("./fonts/Roboto/Roboto-Bold.ttf")
       .text("Do zapłaty:", 50, 435)
       .text(`${data.value * 1.23}`, 150, 435);
     this.generateHr(doc, 50, 200, 455);
 
     doc
       .fontSize(10)
-      .font("./fonts/roboto/Roboto-Regular.ttf")
+      .font("./fonts/Roboto/Roboto-Regular.ttf")
       .text(`Sposób płatności:`, 50, 460)
       .text(`Przelew`, 150, 460)
       .text(`Termin płatności:`, 50, 475)
@@ -195,9 +195,9 @@ module.exports = {
 
   createInvoice: function (data, path, type, id) {
     let doc = new PDFDocument({ margin: 50 });
-    doc.font("./fonts/roboto/Roboto-Regular.ttf");
+    doc.font("./fonts/Roboto/Roboto-Regular.ttf");
     this.generateHeader(doc, data, id);
-    doc.font("./fonts/roboto/Roboto-Regular.ttf").fontSize(10);
+    doc.font("./fonts/Roboto/Roboto-Regular.ttf").fontSize(10);
     this.generateCustomerInformation(doc, data);
     this.generateInvoiceTable(doc, data);
     this.generateSummary(doc, data);
