@@ -4,29 +4,29 @@ const router = express.Router();
 const multer = require("multer");
 const path = require("path");
 const pdf = require("./../utils/pdf");
-const nodemailer = require("nodemailer");
+const email = require("./../utils/email");
 
 const Order = require("../models/Order");
 
 // default nodemailer transporter
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "centrumdruku.online@gmail.com",
-    pass: process.env.APP_PASSWORD,
-  },
-});
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: "centrumdruku.online@gmail.com",
+//     pass: process.env.APP_PASSWORD,
+//   },
+// });
 
 // default nodemailer mailoptions
-const generateMailOptions = (email, order_id) => {
-  return {
-    from: "Powiadomienie Centrum Druku <notyfikacje@centrumdruku.online>",
-    to: `${email}`,
-    subject: `Przyjęliśmy do realizacji zamówienie nr: ${order_id}`,
-    text: `Twoje zamówienie nr ${order_id} zostało przyjęte do realizacji. `,
-    html: `<b>Twoje zamówienie nr ${order_id} zostało przyjęte do realizacji.</b><br />Przejdz na strone http://centrumdruku.online/zamowienie/wyszukaj aby sprawdzic jego status.`,
-  };
-};
+// const generateMailOptions = (email, order_id) => {
+//   return {
+//     from: "Powiadomienie Centrum Druku <notyfikacje@centrumdruku.online>",
+//     to: `${email}`,
+//     subject: `Przyjęliśmy do realizacji zamówienie nr: ${order_id}`,
+//     text: `Twoje zamówienie nr ${order_id} zostało przyjęte do realizacji. `,
+//     html: `<b>Twoje zamówienie nr ${order_id} zostało przyjęte do realizacji.</b><br />Przejdz na strone http://centrumdruku.online/zamowienie/wyszukaj aby sprawdzic jego status.`,
+//   };
+// };
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -106,14 +106,7 @@ router.post("/add", upload.none(), (req, res) => {
   newOrder
     .save()
     .then((data) => {
-      const mailOptions = generateMailOptions(data.client.email, data._id);
-      transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-          console.log(error);
-        } else {
-          console.log("Email sent: " + info.response);
-        }
-      });
+      email.sendConfirmationEmail(data);
       res.json(data);
     })
     .catch((err) => res.status(404));
