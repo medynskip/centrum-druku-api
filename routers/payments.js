@@ -4,7 +4,6 @@ const fetch = require("node-fetch");
 const Order = require("../models/Order");
 
 router.post("/update-status/:id", async (req, res) => {
-  console.log("info from PAYU");
   const entry = {
     date: Date.now(),
     comment: `Aktualizacja płatności PayU: ${req.body.order.status}`,
@@ -12,7 +11,12 @@ router.post("/update-status/:id", async (req, res) => {
   const id = req.body.order.extOrderId;
   Order.findByIdAndUpdate(
     id,
-    { $push: { history: entry }, paymentStatus: req.body.order.status },
+    {
+      $push: { history: entry },
+      paymentStatus: req.body.order.status,
+      paymentCompleted:
+        req.body.order.status == "COMPLETED" ? Date.now() : null,
+    },
     {
       new: true,
       useFindAndModify: false,
@@ -37,7 +41,6 @@ const getToken = async () => {
     }
   );
   const token = await query.json();
-  console.log("token", token);
   return token;
 };
 
@@ -50,7 +53,6 @@ const getPaymentUrl = async (token, req) => {
     },
     body: JSON.stringify(req.body),
   });
-  //   console.log(query);
   return query.url;
 };
 
@@ -67,7 +69,7 @@ router.post("/create/:id", async (req, res) => {
     {
       $push: { history: entry },
       paymentType: "PayU",
-      paymemtStarted: Date.now(),
+      paymentStarted: Date.now(),
     },
     {
       new: true,
