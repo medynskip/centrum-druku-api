@@ -1,11 +1,12 @@
-const express = require("express");
+import express from 'express';
 const router = express.Router();
 
-const Product = require("../models/Product");
+// const ProductSchema = require("../models/Product");
+import ProductSchema from './../models/Product.js';
 
 router.delete("/delete/:id", function (req, res) {
   var id = req.params.id;
-  Product.deleteOne(
+  ProductSchema.deleteOne(
     {
       _id: id,
     },
@@ -17,14 +18,14 @@ router.delete("/delete/:id", function (req, res) {
 });
 
 router.get("/get", (req, res) => {
-  Product.find({}, (err, data) => {
+  ProductSchema.find({}, (err, data) => {
     if (err) return console.log(err);
     res.json(data);
   });
 });
 
 router.get("/get/active", (req, res) => {
-  Product.find(
+  ProductSchema.find(
     {
       active: true,
     },
@@ -33,11 +34,11 @@ router.get("/get/active", (req, res) => {
       res.json(data);
     }
   );
-});
+}); 
 
 router.get("/get/:id", (req, res) => {
   var id = req.params.id;
-  Product.findById(id, (err, data) => {
+  ProductSchema.findById(id, (err, data) => {
     if (err) return console.log(err);
     res.json(data);
   });
@@ -45,7 +46,7 @@ router.get("/get/:id", (req, res) => {
 
 router.put("/update/:id", (req, res) => {
   var id = req.params.id;
-  Product.findByIdAndUpdate(
+  ProductSchema.findByIdAndUpdate(
     id,
     req.body,
     {
@@ -60,7 +61,7 @@ router.put("/update/:id", (req, res) => {
 });
 
 router.post("/add", (req, res) => {
-  const newProduct = new Product({
+  const newProduct = new ProductSchema({
     ...req.body,
   });
 
@@ -75,4 +76,5 @@ router.post("/add", (req, res) => {
     });
 });
 
-module.exports = router;
+export default router;
+// module.exports = router;

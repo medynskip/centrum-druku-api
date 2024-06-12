@@ -1,4 +1,6 @@
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
+
+import mongoose from "mongoose";
 
 const InvoicesSchema = mongoose.Schema({
   id: {
@@ -48,4 +50,6 @@ const ConfigurationSchema = mongoose.Schema({
   lastTempInvoice: InvoicesSchema,
 });
 
-module.exports = mongoose.model("Configuration", ConfigurationSchema);
+export default ConfigurationSchema;
+
+// module.exports = mongoose.model("Configuration", ConfigurationSchema);

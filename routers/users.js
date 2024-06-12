@@ -1,11 +1,16 @@
-require('dotenv').config();
+import 'dotenv/config';
 
-const express = require('express');
-const bcrypt = require('bcryptjs')
+import express from 'express';
+// const bcrypt = require('bcryptjs')
 const router = express.Router();
-const jwt = require('jsonwebtoken')
 
-const User = require('../models/User');
+
+// const jsonwebtoken = require('jsonwebtoken')
+
+import jsonwebtoken from 'jsonwebtoken';
+
+// const UserSchema = require('../models/User');
+import UserSchema from './../models/User.js';
 
 router.get('/register', (req, res) => {
     const {
@@ -21,47 +26,47 @@ router.get('/register', (req, res) => {
         })
     }
 
-    User.findOne({
+    UserSchema.findOne({
             userName: userName
         })
         .then(user => {
             if (user) return res.status(400).json({
                 msg: 'Użytkownik istnieje'
             })
-            const newUser = new User({
+            const newUser = new UserSchema({
                 userName,
                 email,
                 password,
                 role
             })
-            bcrypt.genSalt(10, (err, salt) => {
-                bcrypt.hash(newUser.password, salt, (err, hash) => {
-                    if (err) throw err;
-                    newUser.password = hash;
-                    newUser.save()
-                        .then(user => {
+            // bcrypt.genSalt(10, (err, salt) => {
+            //     bcrypt.hash(newUser.password, salt, (err, hash) => {
+            //         if (err) throw err;
+            //         newUser.password = hash;
+            //         newUser.save()
+            //             .then(user => {
 
-                            jwt.sign({
-                                    _id: user._id
-                                },
-                                process.env.JWT_secret, {
-                                    expiresIn: 600
-                                },
-                                (err, token) => {
-                                    if (err) throw err;
-                                    res.json({
-                                        token: token,
-                                        user: {
-                                            _id: user._id,
-                                            userName: user.userName,
-                                            email: user.email,
-                                            role: user.role
-                                        }
-                                    })
-                                })
-                        })
-                })
-            })
+            //                 jwt.sign({
+            //                         _id: user._id
+            //                     },
+            //                     process.env.JWT_secret, {
+            //                         expiresIn: 600
+            //                     },
+            //                     (err, token) => {
+            //                         if (err) throw err;
+            //                         res.json({
+            //                             token: token,
+            //                             user: {
+            //                                 _id: user._id,
+            //                                 userName: user.userName,
+            //                                 email: user.email,
+            //                                 role: user.role
+            //                             }
+            //                         })
+            //                     })
+            //             })
+            //     })
+            // })
         })
 })
 
@@ -77,7 +82,7 @@ router.post('/login', (req, res) => {
         })
     }
 
-    User.findOne({
+    UserSchema.findOne({
             userName: userName
         })
         .then(user => {
@@ -85,33 +90,31 @@ router.post('/login', (req, res) => {
                 msg: 'Użytkownik nie istnieje'
             })
 
-            bcrypt.compare(password, user.password)
-                .then(isMatch => {
-                    if (!isMatch) return res.status(400).json({
-                        msg: "Niepoprawne haslo"
-                    });
-                    jwt.sign({
-                            _id: user._id
-                        },
-                        process.env.JWT_secret, {
-                            expiresIn: 600
-                        },
-                        (err, token) => {
-                            if (err) throw err;
-                            res.json({
-                                token: token,
-                                user: {
-                                    _id: user._id,
-                                    userName: user.userName,
-                                    email: user.email,
-                                    role: user.role
-                                }
-                            })
-                        })
-                })
+            // bcrypt.compare(password, user.password)
+            //     .then(isMatch => {
+            //         if (!isMatch) return res.status(400).json({
+            //             msg: "Niepoprawne haslo"
+            //         });
+            //         jwt.sign({
+            //                 _id: user._id
+            //             },
+            //             process.env.JWT_secret, {
+            //                 expiresIn: 600
+            //             },
+            //             (err, token) => {
+            //                 if (err) throw err;
+            //                 res.json({
+            //                     token: token,
+            //                     user: {
+            //                         _id: user._id,
+            //                         userName: user.userName,
+            //                         email: user.email,
+            //                         role: user.role
+            //                     }
+            //                 })
+            //             })
+            //     })
         })
 })
 
-
-
-module.exports = router;
+export default router;

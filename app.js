@@ -1,22 +1,35 @@
-require("dotenv").config();
+import 'dotenv/config';
+import express from 'express';
 
-const express = require("express");
 const app = express();
 const port = process.env.PORT || 5001;
-const mongoose = require("mongoose");
-var path = require("path");
-const cors = require("cors");
+import mongoose from 'mongoose';
+import path from 'path';
+import cors from 'cors';
 
+
+import { fileURLToPath } from 'url';
 //routes import
-const productRouter = require("./routers/products");
-const postsRouter = require("./routers/posts");
-const ordersRouter = require("./routers/orders");
-const usersRouter = require("./routers/users");
-const filesRouter = require("./routers/files");
-const pagesRouter = require("./routers/pages");
-const paymentRouter = require("./routers/payments");
-const configurationRouter = require("./routers/configuration");
+import productRouter from './routers/products.js';
+import postsRouter from './routers/posts.js';
+import ordersRouter from './routers/orders.js';
+import usersRouter from './routers/users.js';
+import filesRouter from './routers/files.js';
+import pagesRouter from './routers/pages.js';
+import paymentRouter from './routers/payments.js';
+import configurationRouter from './routers/configuration.js';
 
+// const productRouter = require("./routers/products");
+// const postsRouter = require("./routers/posts");
+// const ordersRouter = require("./routers/orders");
+// const usersRouter = require("./routers/users");
+// const filesRouter = require("./routers/files");
+// const pagesRouter = require("./routers/pages");
+// const paymentRouter = require("./routers/payments");
+// const configurationRouter = require("./routers/configuration");
+
+const __filename = fileURLToPath(import.meta.url); // get the resolved path to the file
+const __dirname = path.dirname(__filename); // get the name of the directory
 app.use("/public", express.static(path.join(__dirname + "/public")));
 
 app.use(express.json());
@@ -36,14 +49,12 @@ app.use("/configuration", configurationRouter);
 //connect to db
 mongoose.connect(
   process.env.DB_CONNECTION,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-  },
-  () => {
-    console.log("connected to CENTRUM_DRUKU db");
-  }
+  // process.env.DB_CONNECTION,
+  // {
+  //   useNewUrlParser: true,
+  //   useUnifiedTopology: true,
+  //   useCreateIndex: true,
+  // }
 );
 
 app.listen(port, () =>

@@ -1,9 +1,16 @@
-const express = require("express");
+
+import express from 'express';
 const router = express.Router();
-const fileSys = require("fs");
-const fs = require("fs").promises;
-const path = require("path");
-const multer = require("multer");
+
+import * as fileSys from 'fs';
+
+// const fileSys = require("fs");
+// const fs = require("fs").promises;
+
+import { promises as fs } from "fs";
+import * as path from 'path';
+import multer from 'multer';
+// const multer = require("multer");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -75,4 +82,4 @@ router.post("/upload/", upload.array("file"), function (req, res) {
   res.send({ data: "success" });
 });
 
-module.exports = router;
+export default router;

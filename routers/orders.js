@@ -1,13 +1,25 @@
-const express = require("express");
-const fs = require("fs");
+
+import express from 'express';
+
+// const fs = require("fs");
+import * as fs from 'fs';
+
+
+// const multer = require("multer");
+import multer from 'multer';
+import * as path from 'path'
+
+// const path = require("path");
+
 const router = express.Router();
-const multer = require("multer");
-const path = require("path");
-const pdf = require("./../utils/pdf");
-const email = require("./../utils/email");
 
-const Order = require("../models/Order");
+import pdf from './../utils/pdf.js';
+// const pdf = require("./../utils/pdf");
+// const email = require("./../utils/email");
+import email from './../utils/email.js';
+// const Order = require("../models/Order");
 
+import OrderSchema from '../models/Order.js';
 // default nodemailer transporter
 // const transporter = nodemailer.createTransport({
 //   service: "gmail",
@@ -66,7 +78,7 @@ function getDirectoryFiles(directory, folder) {
 
 // Get all orders
 router.get("/get", (req, res) => {
-  Order.find({}, (err, data) => {
+  OrderSchema.find({}, (err, data) => {
     if (err) return console.log(err);
     res.json(data);
   }).sort({
@@ -77,7 +89,7 @@ router.get("/get", (req, res) => {
 // Get one order by id
 router.get("/get/:id", (req, res) => {
   var id = req.params.id;
-  Order.findById(id, (err, data) => {
+  OrderSchema.findById(id, (err, data) => {
     if (err) return console.log(err);
     res.json(data);
   });
@@ -86,7 +98,7 @@ router.get("/get/:id", (req, res) => {
 // Get one order by id if correct email provided
 router.get("/get/:id/:email", (req, res) => {
   var id = req.params.id;
-  Order.findById(id, (err, data) => {
+  OrderSchema.findById(id, (err, data) => {
     if (err) return res.json({ msg: "BRAK ZAMOWIENIA", err: err });
     if (data.client.email == req.params.email) {
       return res.json(data);
@@ -118,7 +130,7 @@ router.post("/update/files", upload.array("file"), (req, res) => {
   const directoryPath = `./public/orders/${id}`;
   getDirectoryFiles(directoryPath, req.body.order).then((files) => {
     var id = req.body.order;
-    Order.findByIdAndUpdate(
+    OrderSchema.findByIdAndUpdate(
       id,
       { files: [...files] },
       {
@@ -137,11 +149,11 @@ router.post("/update/files", upload.array("file"), (req, res) => {
 router.post("/update/invoice/:id", (req, res) => {
   const id = req.params.id;
 
-  Order.findById(id, (err, data) => {
+  OrderSchema.findById(id, (err, data) => {
     if (err) return console.log(err);
     pdf.create(data, "VAT");
   }).then(
-    Order.findByIdAndUpdate(
+    OrderSchema.findByIdAndUpdate(
       id,
       {
         invoice: Date.now(),
@@ -162,11 +174,11 @@ router.post("/update/invoice/:id", (req, res) => {
 router.post("/update/temp-invoice/:id", (req, res) => {
   const id = req.params.id;
 
-  Order.findById(id, (err, data) => {
+  OrderSchema.findById(id, (err, data) => {
     if (err) return console.log(err);
     pdf.create(data, "temp");
   }).then(
-    Order.findByIdAndUpdate(
+    OrderSchema.findByIdAndUpdate(
       id,
       {
         invoiceTemp: Date.now(),
@@ -200,7 +212,7 @@ router.get("/temp-invoice/download/:id", (req, res) => {
 // Update order by ID
 router.put("/update/:id", (req, res) => {
   const id = req.params.id;
-  Order.findByIdAndUpdate(
+  OrderSchema.findByIdAndUpdate(
     id,
     req.body,
     {
@@ -216,7 +228,7 @@ router.put("/update/:id", (req, res) => {
 
 router.delete("/delete/:id", function (req, res) {
   var id = req.params.id;
-  Order.deleteOne(
+  OrderSchema.deleteOne(
     {
       _id: id,
     },
@@ -227,4 +239,4 @@ router.delete("/delete/:id", function (req, res) {
   );
 });
 
-module.exports = router;
+export default router;

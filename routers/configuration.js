@@ -1,7 +1,10 @@
-const express = require("express");
+
+import express from 'express';
 const router = express.Router();
 
-const Configuration = require("../models/Configuration");
+// const Configuration = require("../models/Configuration");
+
+import ConfigurationSchema from '../models/Configuration.js';
 
 // Get configuration
 router.get("/get", (req, res) => {
@@ -23,7 +26,7 @@ router.post("/set", (req, res) => {
       .then((data) => res.json(data))
       .catch((err) => res.status(404));
   } else {
-    Configuration.findByIdAndUpdate(
+    ConfigurationSchema.findByIdAndUpdate(
       req.body._id,
       req.body,
       {
@@ -38,4 +41,4 @@ router.post("/set", (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const FieldSchema = mongoose.Schema({
   name: {
@@ -19,7 +19,7 @@ const ParameterSchema = mongoose.Schema({
   fieldValues: [FieldSchema],
 });
 
-PriceSchema = mongoose.Schema({
+const PriceSchema = mongoose.Schema({
   amount: {
     type: Number,
     required: true,
@@ -59,4 +59,4 @@ const ProductSchema = mongoose.Schema({
   prices: [PriceSchema],
 });
 
-module.exports = mongoose.model("Products", ProductSchema);
+export default ProductSchema;

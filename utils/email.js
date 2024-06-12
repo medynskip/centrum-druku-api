@@ -1,7 +1,9 @@
-const nodemailer = require("nodemailer");
-const Email = require("email-templates");
+// const nodemailer = require("nodemailer");
+import nodemailer from 'nodemailer';
+import Email from 'email-templates';
+// const Email = require("email-templates");
 
-module.exports = {
+const email = {
   // generateMailOptions: (email, order_id) => {
   //   return {
   //     from: "Powiadomienie Centrum Druku <notyfikacje@centrumdruku.online>",
@@ -68,3 +70,5 @@ module.exports = {
     //   });
   },
 };
+
+export default email;

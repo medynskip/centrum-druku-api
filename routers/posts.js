@@ -1,10 +1,11 @@
-const express = require("express");
+import express from 'express';
 const router = express.Router();
 
-const Post = require("../models/Post");
+import PostSchema from '../models/Post.js';
+// const PostSchema = require("../models/Post");
 
 router.get("/get", (req, res) => {
-  Post.find({}, (err, data) => {
+  PostSchema.find({}, (err, data) => {
     if (err) return console.log(err);
     res.json(data);
   }).sort({
@@ -13,7 +14,7 @@ router.get("/get", (req, res) => {
 });
 
 router.get("/get/active", (req, res) => {
-  Post.find(
+  PostSchema.find(
     {
       active: true,
     },
@@ -28,14 +29,14 @@ router.get("/get/active", (req, res) => {
 
 router.get("/get/:id", (req, res) => {
   var id = req.params.id;
-  Post.findById(id, (err, data) => {
+  PostSchema.findById(id, (err, data) => {
     if (err) return console.log(err);
     res.json(data);
   });
 });
 
 router.post("/add", (req, res) => {
-  const newPost = new Post({
+  const newPost = new PostSchema({
     title: req.body.title,
     added: Date.now(),
     author: req.body.author,
@@ -57,7 +58,7 @@ router.post("/add", (req, res) => {
 
 router.put("/update/:id", (req, res) => {
   var id = req.params.id;
-  Post.findByIdAndUpdate(
+  PostSchema.findByIdAndUpdate(
     id,
     req.body,
     {
@@ -73,7 +74,7 @@ router.put("/update/:id", (req, res) => {
 
 router.delete("/delete/:id", function (req, res) {
   var id = req.params.id;
-  Post.deleteOne(
+  PostSchema.deleteOne(
     {
       _id: id,
     },
@@ -84,4 +85,4 @@ router.delete("/delete/:id", function (req, res) {
   );
 });
 
-module.exports = router;
+export default router;

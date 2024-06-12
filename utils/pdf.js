@@ -1,9 +1,12 @@
-const PDFDocument = require("pdfkit");
-const fs = require("fs");
+// const PDFDocument = require("pdfkit");
 
-const Configuration = require("../models/Configuration");
+import * as PDFDocument from 'pdfkit';
+// const fs = require("fs");
+import * as fs from 'fs';
+// const Configuration = require("../models/Configuration");
+import ConfigurationSchema from "../models/Configuration.js";
 
-module.exports = {
+const pdf = {
   formatDate: function (date) {
     const day = date.getDate();
     const month = date.getMonth() + 1;
@@ -26,7 +29,7 @@ module.exports = {
       let number = type == "VAT" ? `Faktura VAT nr ` : `Faktura PRO-FORMA nr `;
       let typeConvert = type == "VAT" ? `lastInvoice` : `lastTempInvoice`;
       let temp;
-      Configuration.find({}, (err, data) => {
+      ConfigurationSchema.find({}, (err, data) => {
         if (err) return console.log(err);
         temp = type == "VAT" ? data[0].lastInvoice : data[0].lastTempInvoice;
         let month = new Date().getMonth() + 1;
@@ -39,7 +42,7 @@ module.exports = {
           number += `${temp.id}/${temp.month + 1}/${temp.year}/CD`;
         }
       }).then((obj) => {
-        Configuration.findByIdAndUpdate(
+        ConfigurationSchema.findByIdAndUpdate(
           obj[0]._id,
           {
             [typeConvert]: {
@@ -220,3 +223,5 @@ module.exports = {
     });
   },
 };
+
+export default pdf;

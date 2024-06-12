@@ -1,7 +1,11 @@
-const express = require("express");
+
+import express from 'express';
 const router = express.Router();
-const fetch = require("node-fetch");
-const Order = require("../models/Order");
+
+import fetch from 'node-fetch';
+
+import OrderSchema from '../models/Order.js';
+// const OrderSchema = require("../models/Order");
 
 router.post("/update-status/:id", async (req, res) => {
   const entry = {
@@ -9,7 +13,7 @@ router.post("/update-status/:id", async (req, res) => {
     comment: `Aktualizacja płatności PayU: ${req.body.order.status}`,
   };
   const id = req.body.order.extOrderId;
-  Order.findByIdAndUpdate(
+  OrderSchema.findByIdAndUpdate(
     id,
     {
       $push: { history: entry },
@@ -64,7 +68,7 @@ router.post("/create/:id", async (req, res) => {
     date: Date.now(),
     comment: `Wybrano metodę płatności -PayU- oraz rozpoczęto proces płatności`,
   };
-  Order.findByIdAndUpdate(
+  OrderSchema.findByIdAndUpdate(
     id,
     {
       $push: { history: entry },
@@ -82,4 +86,4 @@ router.post("/create/:id", async (req, res) => {
   res.json({ url: stream, success: "OK" });
 });
 
-module.exports = router;
+export default router;

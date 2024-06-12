@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
 
+import mongoose from "mongoose";
 const PageSchema = mongoose.Schema({
   title: {
     type: String,
@@ -35,4 +35,4 @@ const PageSchema = mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Pages", PageSchema);
+export default PageSchema;
