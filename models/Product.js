@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+const { Schema } = mongoose;
 
-const FieldSchema = mongoose.Schema({
+const FieldSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -11,7 +12,7 @@ const FieldSchema = mongoose.Schema({
   },
 });
 
-const ParameterSchema = mongoose.Schema({
+const ParameterSchema = new Schema({
   fieldName: {
     type: String,
     required: true,
@@ -19,7 +20,7 @@ const ParameterSchema = mongoose.Schema({
   fieldValues: [FieldSchema],
 });
 
-const PriceSchema = mongoose.Schema({
+const PriceSchema = new Schema({
   amount: {
     type: Number,
     required: true,
@@ -30,7 +31,7 @@ const PriceSchema = mongoose.Schema({
   },
 });
 
-const ProductSchema = mongoose.Schema({
+const ProductSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -59,4 +60,6 @@ const ProductSchema = mongoose.Schema({
   prices: [PriceSchema],
 });
 
-export default ProductSchema;
+const Product = mongoose.model('Product', ProductSchema);
+
+export default Product;
