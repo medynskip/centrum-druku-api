@@ -4,36 +4,38 @@ const router = express.Router();
 // const ProductSchema = require("../models/Product");
 import Product from './../models/Product.js';
 
-router.delete("/delete/:id", function (req, res) {
+router.delete("/delete/:id", async (req, res) => {
   var id = req.params.id;
-  Product.deleteOne(
+  const resp = await Product.deleteOne(
     {
       _id: id,
-    },
-    function (err) {
-      if (err) return console.log(err);
-      res.status(200).end();
     }
   );
+
+  res.json(resp);
 });
 
-router.get("/get", (req, res) => {
-  Product.find({}, (err, data) => {
-    if (err) return console.log(err);
-    res.json(data);
+router.get("/get", async (req, res) => {
+  const resp = await Product.find();
+
+  res.json(resp);
+});
+
+router.get("/get/active", async (req, res) => {
+  const resp = await Product.find({
+    active: true,
   });
-});
 
-router.get("/get/active", (req, res) => {
-  Product.find(
-    {
-      active: true,
-    },
-    (err, data) => {
-      if (err) return console.log(err);
-      res.json(data);
-    }
-  );
+  res.json(resp);
+  // Product.find(
+  //   {
+  //     active: true,
+  //   },
+  //   (err, data) => {
+  //     if (err) return console.log(err);
+  //     res.json(data);
+  //   }
+  // );
 }); 
 
 router.get("/get/:id", (req, res) => {
@@ -61,11 +63,8 @@ router.put("/update/:id", (req, res) => {
 });
 
 router.post("/add", (req, res) => {
-
-  console.log('REQ', req.body);
   const newProduct = new Product({
     ...req.body,
-    // name: "BABABBA"
   });
 
   newProduct
@@ -80,4 +79,3 @@ router.post("/add", (req, res) => {
 });
 
 export default router;
-// module.exports = router;
