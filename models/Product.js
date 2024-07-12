@@ -2,12 +2,8 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const FieldSchema = new Schema({
-  name: {
+  value: {
     type: String,
-    required: true,
-  },
-  multiplier: {
-    type: Number,
     required: true,
   },
 });
@@ -18,17 +14,6 @@ const ParameterSchema = new Schema({
     required: true,
   },
   fieldValues: [FieldSchema],
-});
-
-const PriceSchema = new Schema({
-  amount: {
-    type: Number,
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
 });
 
 const ProductSchema = new Schema({
@@ -57,7 +42,7 @@ const ProductSchema = new Schema({
     required: false,
   },
   parameters: [ParameterSchema],
-  prices: [PriceSchema],
+  // prices: [PriceSchema],
 });
 
 const Product = mongoose.model('Product', ProductSchema);
